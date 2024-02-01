@@ -10575,11 +10575,6 @@ vue-hot-reload-api@^2.3.0:
   resolved "https://registry.npmmirror.com/vue-hot-reload-api/-/vue-hot-reload-api-2.3.4.tgz"
   integrity sha512-BXq3jwIagosjgNVae6tkHzzIk6a8MHFtzAdwhnV5VlvPTFxDCvIttgSiHWjdGoTJvXtmRu5HacExfdarRcFhog==
 
-vue-i18n@^8.27.1:
-  version "8.28.2"
-  resolved "https://registry.npmmirror.com/vue-i18n/-/vue-i18n-8.28.2.tgz"
-  integrity sha512-C5GZjs1tYlAqjwymaaCPDjCyGo10ajUphiwA922jKt9n7KPpqR7oM1PCwYzhB/E7+nT3wfdG3oRre5raIT1rKA==
-
 vue-loader@^17.0.0:
   version "17.0.1"
   resolved "https://registry.npmmirror.com/vue-loader/-/vue-loader-17.0.1.tgz"

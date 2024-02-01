@@ -35,7 +35,7 @@
 
       <a-card
         :loading='loading'
-        :title="$t('dashboard.analysis.online-top-search')"
+        :title="1234567"
       >
         <div class='table-page-search-wrapper'>
           <a-form layout='inline'>
@@ -59,8 +59,8 @@
                 <a-button
                   type='primary'
                   style='margin-left: 8px'
-                  @click='test($event)'
-                >TEST
+                  @click='updateTrophyList($event)'
+                >更新奖杯列表
                 </a-button>
               </a-col>
             </a-row>
@@ -75,18 +75,18 @@
             :rowKey='(dataSource) => dataSource.id'
           >
             <span slot='imgUrl' slot-scope='text, record, index'>
-              <img style='width: 50px; heigth: 50px' :src='record.imgUrl' />
+              <img style='width: 50px; height: 50px' :src='record.imgUrl' />
             </span>
             <span slot='platform' slot-scope='text, record, index'>
               <span v-if="text === 'PS4'">
                 <img
-                  style='width: 50px; heigth: 50px'
+                  style='width: 50px; height: 50px'
                   src='../../../src/assets/icons/icons8-ps4-50.svg'
                 />
               </span>
               <span v-else-if="text === 'PS5'">
                 <img
-                  style='width: 50px; heigth: 50px'
+                  style='width: 50px; height: 50px'
                   src='../../../src/assets/icons/icons8-ps5-50.svg'
                 />
               </span>
@@ -94,13 +94,13 @@
             <span slot='isPlatinum' slot-scope='text, record, index'>
               <span v-if='text === 1'>
                 <img
-                  style='width: 50px; heigth: 50px'
+                  style='width: 50px; height: 50px'
                   src='https://psnprofiles.com/lib/img/icons/40-platinum.png'
                 />
               </span>
               <span v-else-if='text === 0'>
                 <img
-                  style='width: 50px; heigth: 50px; filter: grayscale(100%)'
+                  style='width: 50px; height: 50px; filter: grayscale(100%)'
                   src='https://psnprofiles.com/lib/img/icons/40-platinum.png'
                 />
               </span>
@@ -131,30 +131,6 @@ export default {
         current: 1
       },
       columns: [
-        // {
-        //   title: "序号",
-        //   dataIndex: "index",
-        //   key: "index",
-        //   align: "center",
-        //   customRender: (text, record, index) => {
-        //     if (!this.pagination.pageSize) {
-        //       return index + 1;
-        //     } else {
-        //       let newVar =
-        //         (this.pagination.current - 1) * this.pagination.pageSize +
-        //         index +
-        //         1;
-        //       return newVar;
-        //     }
-        //   },
-        // },
-        // {
-        //   title: "",
-        //   dataIndex: "imgUrl",
-        //   key: "imgUrl",
-        //   align: "center",
-        //   scopedSlots: { customRender: "imgUrl" },
-        // },
         {
           title: '游戏名称',
           dataIndex: 'name',
@@ -199,6 +175,22 @@ export default {
           dataIndex: 'definedPlatinum',
           key: 'definedPlatinum',
           align: 'center'
+        },
+        {
+          title: '操作',
+          dataIndex:
+            'operation',
+          align:
+            'center',
+          customRender:
+            (text, record) => {
+              console.log(record)
+              return (
+                <span>
+                  <a-button type="primary" onClick={() => this.getTrophyDetails(record.id)}>奖杯明细</a-button>
+                </span>
+              )
+            }
         }
       ],
       bronze: 0,
@@ -208,19 +200,32 @@ export default {
     }
   },
   created() {
-    this.getTrophyStatistics()
     this.getTableDate()
-    //this.test()
+    this.getTrophyStatistics()
   },
   methods: {
 
-    test() {
+    getTrophyDetails(id) {
+      this.$router.push(
+        {
+          path: '/game/trophy_details',
+          query: { id: id }
+        })
+    },
+
+    /**
+     *更新奖杯列表
+     */
+    updateTrophyList(e) {
       request({
-        url: '/ps/test',
+        url: '/ps/trophy/update',
         method: 'GET'
       }).then((res) => {
-        console.log(res)
+        if (res.code === 200) {
+          this.$message.success('已加入更新队列，数据更新可能需要几分钟')
+        }
       })
+      e.target.blur()
     },
 
     getTrophyStatistics() {

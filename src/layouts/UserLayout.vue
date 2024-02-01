@@ -14,7 +14,7 @@
             </a>
           </div>
           <div class="desc">
-            {{ $t('layouts.userLayout.title') }}
+            Ant Design 是西湖区最具影响力的 Web 设计规范
           </div>
         </div>
 
@@ -37,12 +37,10 @@
 
 <script>
 import { deviceMixin } from '@/store/device-mixin'
-import SelectLang from '@/components/SelectLang'
 
 export default {
   name: 'UserLayout',
   components: {
-    SelectLang
   },
   mixins: [deviceMixin],
   mounted () {
