@@ -23,24 +23,9 @@ export default {
   menu: {
     locale: false
   },
-  title: 'Ant Design Pro',
+  title: 'P1casso',
   pwa: false,
   iconfontUrl: '',
   production: process.env.NODE_ENV === 'production' && process.env.VUE_APP_PREVIEW !== 'true'
 }
-
-// export default {
-//   layout: 'topmenu',
-//   contentWidth: 'Fluid',
-//   theme: 'dark',
-//   primaryColor: '#1890ff',
-//   fixedHeader: false,
-//   fixSiderbar: false,
-//   hideHintAlert: false,
-//   hideCopyButton: false,
-//   title: 'Ant Design Pro',
-//   pwa: false,
-//   iconfontUrl: '',
-//   production: process.env.NODE_ENV === 'production' && process.env.VUE_APP_PREVIEW !== 'true'
-// }
 
