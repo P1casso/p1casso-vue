@@ -8,7 +8,6 @@
     :handleCollapse="handleCollapse"
     v-bind="settings"
   >
-
     <!-- 1.0.0+ 版本 pro-layout 提供 API，
           我们推荐使用这种方式进行 LOGO 和 title 自定义
     -->
@@ -24,23 +23,22 @@
     <template v-slot:headerContentRender>
       <div>
         <a-tooltip title="刷新页面">
-          <a-icon type="reload" style="font-size: 18px;cursor: pointer;" @click="() => { $message.info('只是一个DEMO') }" />
+          <a-icon
+            type="reload"
+            style="font-size: 18px; cursor: pointer"
+            @click="
+              () => {
+                $message.info('只是一个DEMO')
+              }
+            "
+          />
         </a-tooltip>
       </div>
     </template>
 
     <setting-drawer v-if="isDev" :settings="settings" @change="handleSettingChange">
-      <div style="margin: 12px 0;">
-        This is SettingDrawer custom footer content.
-      </div>
+      <div style="margin: 12px 0">This is SettingDrawer custom footer content.</div>
     </setting-drawer>
-<!--    <template v-slot:rightContentRender>-->
-<!--      <right-content :top-menu="settings.layout === 'topmenu'" :is-mobile="isMobile" :theme="settings.theme" />-->
-<!--    </template>-->
-    <!-- custom footer / 自定义Footer -->
-    <template v-slot:footerRender>
-      <global-footer />
-    </template>
     <router-view />
   </pro-layout>
 </template>
@@ -51,17 +49,15 @@ import { mapState } from 'vuex'
 import { CONTENT_WIDTH_TYPE, SIDEBAR_TYPE, TOGGLE_MOBILE_TYPE } from '@/store/mutation-types'
 import { asyncRouterMap } from '@/config/router.config.js'
 import defaultSettings from '@/config/defaultSettings'
-import GlobalFooter from '@/components/GlobalFooter'
 import Ads from '@/components/Other/CarbonAds'
 
 export default {
   name: 'BasicLayout',
   components: {
     SettingDrawer,
-    GlobalFooter,
-    Ads
+    Ads,
   },
-  data () {
+  data() {
     return {
       // preview.pro.antdv.com only use.
       isProPreviewSite: process.env.VUE_APP_PREVIEW === 'true' && process.env.NODE_ENV !== 'development',
@@ -87,27 +83,46 @@ export default {
         colorWeak: defaultSettings.colorWeak,
 
         hideHintAlert: false,
-        hideCopyButton: false
+        hideCopyButton: false,
       },
       // 媒体查询
       query: {},
 
       // 是否手机模式
-      isMobile: false
+      isMobile: false,
     }
   },
   computed: {
     ...mapState({
       // 动态主路由
-      mainMenu: state => state.permission.addRouters
-    })
+      mainMenu: (state) => state.permission.addRouters,
+    }),
   },
-  created () {
+  watch: {
+    $route(to, from) {
+      if (to.name === 'PsGame') {
+        this.handleSettingChange({ type: 'layout', value: 'topmenu', })
+        // this.handleSettingChange({ type: 'contentWidth', value: 'Fluid', })
+      }
+      // 恢复原来的布局
+      if (from.name === 'PsGame' && to.name !== 'PsGame') {
+        this.handleSettingChange({ type: 'layout', value: defaultSettings.layout })
+        // this.handleSettingChange({ type: 'contentWidth', value: defaultSettings.contentWidth })
+      }
+    },
+  },
+  created() {
     const routes = asyncRouterMap.find((item) => item.path === '/')
-    // const routes = this.mainMenu.find((item) => item.path === '/')
     this.menus = (routes && routes.children) || []
+    console.log(this.$route.name)
+    if (this.$route.name === 'PsGame') {
+      this.handleSettingChange({
+        type: 'layout',
+        value: 'topmenu',
+      })
+    }
   },
-  mounted () {
+  mounted() {
     const userAgent = navigator.userAgent
     if (userAgent.indexOf('Edge') > -1) {
       this.$nextTick(() => {
@@ -157,11 +172,15 @@ export default {
           }
           break
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style lang="less">
-@import "./BasicLayout.less";
+body .ant-pro-grid-content.wide {
+  max-width: 1800px !important;
+}
+@import './BasicLayout.less';
+
 </style>

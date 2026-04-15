@@ -14,7 +14,6 @@ import TagCloud from '@/components/Charts/TagCloud'
 // pro components
 import AvatarList from '@/components/AvatarList'
 import Ellipsis from '@/components/Ellipsis'
-import FooterToolbar from '@/components/FooterToolbar'
 import NumberInfo from '@/components/NumberInfo'
 import Tree from '@/components/Tree/Tree'
 import Trend from '@/components/Trend'
@@ -42,7 +41,6 @@ export {
   TransferBar,
   Trend,
   Ellipsis,
-  FooterToolbar,
   NumberInfo,
   Tree,
   STable,

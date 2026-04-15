@@ -6,6 +6,9 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store/'
+
+import { FormModel } from 'ant-design-vue';
+Vue.use(FormModel);
 import { VueAxios } from './utils/request'
 import ProLayout, { PageHeaderWrapper } from '@ant-design-vue/pro-layout'
 import themePluginConfig from '../config/themePluginConfig'
@@ -17,6 +20,7 @@ import './utils/filter' // global filter
 import './global.less' // global style
 
 Vue.config.productionTip = false
+Vue.config.silent = false
 
 // mount axios to `Vue.$http` and `this.$http`
 Vue.use(VueAxios)

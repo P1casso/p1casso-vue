@@ -5,19 +5,16 @@
         <a-row :gutter="48">
           <a-col :md="4" :sm="24">
             <a-form-item label="游戏名称">
-              <a-input v-model="queryParam.id" placeholder="" />
+              <a-input v-model="queryParam.name" placeholder="" :allowClear="true" />
             </a-form-item>
           </a-col>
           <a-col :md="4" :sm="24">
             <a-form-item label="游戏平台">
-              <a-select
-                v-model="queryParam.status"
-                placeholder="请选择"
-                default-value="0"
-              >
+              <a-select v-model="queryParam.gamesPlatform" placeholder="请选择" default-value="0" :allowClear="true">
                 <a-select-option value="0">Steam</a-select-option>
                 <a-select-option value="1">PS5</a-select-option>
                 <a-select-option value="3">XBOX</a-select-option>
+                <a-select-option value="7">Switch</a-select-option>
                 <a-select-option value="4">Epic</a-select-option>
                 <a-select-option value="5">EA</a-select-option>
                 <a-select-option value="6">暴雪</a-select-option>
@@ -25,16 +22,8 @@
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="24">
-            <a-button type="primary" @click="this.getGamePlanList"
-            >查询
-            </a-button
-            >
-            <a-button
-              style="margin-left: 8px"
-              @click="() => (this.queryParam = {})"
-            >重置
-            </a-button
-            >
+            <a-button type="primary" @click="this.getGamePlanList">查询</a-button>
+            <a-button style="margin-left: 8px" @click="() => (this.queryParam = {})">重置</a-button>
           </a-col>
         </a-row>
       </a-form>
@@ -44,56 +33,58 @@
       <a-button type="primary" icon="plus" @click="addButtonClick()">新建</a-button>
     </div>
 
-    <a-table
-      :columns="columns"
-      :dataSource="dataSource"
-      bordered
-      :pagination="pagination"
-      @change="handlePageChange"
-    >
+    <a-table :columns="columns" :dataSource="dataSource" bordered :pagination="pagination" @change="handlePageChange">
       <span slot="isPlatinum" slot-scope="text, record, index">
-        <span v-if="text == 1" style="color: green; font-weight: bolder">
-          <a-tag color="#00CD00">是</a-tag>
+        <span v-if="text === '1'">
+          <a-tag color="green"> 是</a-tag>
         </span>
-        <span v-else-if="text == 0" style="color: red">
-          <a-tag color="#FF0000">否</a-tag>
+        <span v-else-if="text === '0'">
+          <a-tag color="orange"> 否</a-tag>
         </span>
+        <span v-else> / </span>
       </span>
+      <span slot="isPlanPlatinum" slot-scope="text, record, index">
+        <span v-if="text === '1'">
+          <a-tag color="green"> 是</a-tag>
+        </span>
+        <span v-else-if="text === '0'">
+          <a-tag color="orange"> 否</a-tag>
+        </span>
+        <span v-else> / </span>
+      </span>
+      <span slot="platinumDate" slot-scope="text, record, index">
+
+        <span v-if="record.gamesPlatform == '7'">/</span>
+        <span v-else>{{text}}</span>
+      </span>
+
       <span slot="gamesPlatform" slot-scope="text, record, index">
         <span v-if="text == 0" style="color: green; font-weight: bolder">
-          <img
-            src="../../../src/assets/icons/steam.svg"
-            alt="SVG Image"
-            style="width: 32px; height: 32px"
-          />
+          <img src="../../../src/assets/icons/steam.svg" alt="SVG Image" style="width: 32px; height: 32px" />
         </span>
         <span v-else-if="text == 1" style="color: red">
-          <img
-            src="../../../src/assets/icons/PS5.svg"
-            alt="SVG Image"
-            style="width: 32px; height: 32px"
-          />
+          <img src="../../../src/assets/icons/PS5.svg" alt="SVG Image" style="width: 32px; height: 32px" />
         </span>
         <span v-else-if="text == 3" style="color: red">
-          <img
-            src="../../../src/assets/icons/xbox.svg"
-            alt="SVG Image"
-            style="width: 32px; height: 32px"
-          />
+          <img src="../../../src/assets/icons/xbox.svg" alt="SVG Image" style="width: 32px; height: 32px" />
         </span>
         <span v-else-if="text == 4" style="color: red">
-          <img
-            src="../../../src/assets/icons/epic.svg"
-            alt="SVG Image"
-            style="width: 32px; height: 32px"
-          />
+          <img src="../../../src/assets/icons/epic.svg" alt="SVG Image" style="width: 32px; height: 32px" />
         </span>
         <span v-else-if="text == 6" style="color: red">
-          <img
-            src="../../../src/assets/icons/battle-net.svg"
-            alt="SVG Image"
-            style="width: 32px; height: 32px"
-          />
+          <img src="../../../src/assets/icons/battle-net.svg" alt="SVG Image" style="width: 32px; height: 32px" />
+        </span>
+        <span v-else-if="text == 7" style="color: red">
+          <img src="../../../src/assets/icons/switch.svg" alt="SVG Image" style="width: 32px; height: 32px" />
+        </span>
+      </span>
+      <span slot="operation" slot-scope="text, record, index">
+        <span>
+          <a-button type="primary" @click="editButtonClick(index, '编辑')">编辑</a-button>
+          <span style="margin-right: 10px"></span>
+          <a-popconfirm title="确定删除该记录吗？" ok-text="是" cancel-text="否" @confirm="deleteGame(record.id)">
+            <a-button type="danger">删除</a-button>
+          </a-popconfirm>
         </span>
       </span>
     </a-table>
@@ -116,6 +107,7 @@
               <a-select-option value="0">Steam</a-select-option>
               <a-select-option value="1">PS5</a-select-option>
               <a-select-option value="3">XBOX</a-select-option>
+              <a-select-option value="7">Switch</a-select-option>
               <a-select-option value="4">Epic</a-select-option>
               <a-select-option value="5">EA</a-select-option>
               <a-select-option value="6">暴雪</a-select-option>
@@ -128,31 +120,26 @@
             <a-date-picker v-model:value="editData.dateOfClearance" />
           </a-form-item>
           <a-form-item label="全成就/白金日期">
-            <a-date-picker v-model:value="editData.platinumDate" />
+            <a-date-picker v-if="editData.gamesPlatform === '7'" disabled />
+            <a-date-picker v-else v-model:value="editData.platinumDate" />
           </a-form-item>
 
           <a-form-item label="是否打算全成就/白金">
-            <a-select v-model="editData.isPlanPlatinum">
+            <a-select v-if="editData.gamesPlatform === '7'" disabled />
+            <a-select v-else v-model="editData.isPlanPlatinum">
               <a-select-option value="0">否</a-select-option>
               <a-select-option value="1">是</a-select-option>
             </a-select>
           </a-form-item>
           <a-form-item label="是否全成就/白金">
-            <a-select v-model="editData.isPlatinum">
+            <a-select v-if="editData.gamesPlatform === '7'" disabled />
+            <a-select v-else v-model="editData.isPlatinum">
               <a-select-option value="0">否</a-select-option>
               <a-select-option value="1">是</a-select-option>
             </a-select>
           </a-form-item>
         </a-form>
       </a-spin>
-    </a-modal>
-    <a-modal
-      title="警告"
-      :visible="deleteConfirmVisible"
-      @cancel="this.closeDeleteConfirmModel"
-      @ok="this.deleteButtonClick"
-    >
-      <p>是否确认删除</p>
     </a-modal>
   </a-card>
 </template>
@@ -168,12 +155,12 @@ export default {
     this.formLayout = {
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 7 }
+        sm: { span: 7 },
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 13 }
-      }
+        sm: { span: 13 },
+      },
     }
     return {
       deleteConfirmVisible: false,
@@ -181,9 +168,8 @@ export default {
       visible: false,
       loading: false,
       queryParam: {
-        id: null,
-        status: null,
-        date: null
+        name: '',
+        gamesPlatform: '',
       },
       editData: {
         id: null,
@@ -193,7 +179,7 @@ export default {
         dateOfClearance: null,
         isPlanPlatinum: null,
         platinumDate: null,
-        isPlatinum: null
+        isPlatinum: null,
       },
       columns: [
         {
@@ -207,80 +193,66 @@ export default {
             } else {
               return (this.pagination.current - 1) * this.pagination.pageSize + index + 1
             }
-          }
+          },
         },
         {
           title: '游戏名称',
           dataIndex: 'name',
           key: 'name',
-          align: 'center'
+          align: 'center',
         },
         {
           title: '游戏平台',
           dataIndex: 'gamesPlatform',
           key: 'gamesPlatform',
           align: 'center',
-          scopedSlots: { customRender: 'gamesPlatform' }
+          scopedSlots: { customRender: 'gamesPlatform' },
         },
         {
           title: '开始游玩日期',
           dataIndex: 'playStartDate',
           key: 'playStartDate',
-          align: 'center'
+          align: 'center',
         },
         {
           title: '通关日期',
           dataIndex: 'dateOfClearance',
           key: 'dateOfClearance',
-          align: 'center'
+          align: 'center',
         },
         {
           title: '是否计划全成就/白金',
           dataIndex: 'isPlanPlatinum',
           key: 'isPlanPlatinum',
           align: 'center',
-          customRender: (text) => {
-            if (text == 1) {
-              return '是'
-            }
-            if (text == 0) {
-              return '否'
-            }
-          }
+          scopedSlots: { customRender: 'isPlanPlatinum' },
         },
         {
           title: '是否全成就/白金',
           dataIndex: 'isPlatinum',
           key: 'isPlatinum',
           align: 'center',
-          scopedSlots: { customRender: 'isPlatinum' }
+          scopedSlots: { customRender: 'isPlatinum' },
         },
         {
           title: '全成就/白金日期',
           dataIndex: 'platinumDate',
           key: 'platinumDate',
-          align: 'center'
+          align: 'center',
+          scopedSlots: { customRender: 'platinumDate' },
         },
         {
           title: '操作',
           dataIndex: 'operation',
           align: 'center',
-          customRender: (text, record, index) => {
-            return (
-              <span>
-                <a-button type="primary" onClick={() => this.editButtonClick(index, '编辑')}>编辑</a-button>
-                <span style={{ marginRight: '10px' }}></span>
-                <a-button type="danger" onClick={() => this.openDeleteConfirmButton(record.id)}>删除</a-button>
-              </span>
-            )
-          }
-        }
+          scopedSlots: { customRender: 'operation' },
+        },
       ],
       dataSource: [],
       modalTitle: null,
       pagination: {
-        current: 1
-      }
+        current: 1,
+      },
     }
   },
   methods: {
@@ -291,7 +263,7 @@ export default {
     editButtonClick(index, title) {
       this.modalTitle = title
       this.editData = {
-        ...this.dataSource[10 * (this.pagination.current - 1) + index]
+        ...this.dataSource[10 * (this.pagination.current - 1) + index],
       }
       this.visible = true
     },
@@ -301,9 +273,14 @@ export default {
     },
 
     getGamePlanList() {
+      console.log(this.queryParam)
       request({
         url: '/game/plan_list',
-        method: 'GET'
+        method: 'POST',
+        data: JSON.stringify(this.queryParam),
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8',
+        },
       }).then((res) => {
         this.dataSource = res.data
       })
@@ -317,7 +294,7 @@ export default {
         gamesPlatform: null,
         dateOfClearance: null,
         isPlanPlatinum: null,
-        isPlatinum: null
+        isPlatinum: null,
       }
       this.visible = true
     },
@@ -329,11 +306,12 @@ export default {
           method: 'POST',
           data: JSON.stringify(this.editData),
           headers: {
-            'Content-Type': 'application/json;charset=UTF-8'
-          }
+            'Content-Type': 'application/json;charset=UTF-8',
+          },
         }).then((res) => {
           if (res.code === 200) {
             this.visible = false
+            this.$message.success('添加成功')
             this.getGamePlanList()
           } else {
             this.$message.error(res.message)
@@ -345,41 +323,39 @@ export default {
           method: 'POST',
           data: JSON.stringify(this.editData),
           headers: {
-            'Content-Type': 'application/json;charset=UTF-8'
-          }
+            'Content-Type': 'application/json;charset=UTF-8',
+          },
         }).then((res) => {
           if (res.code === 200) {
             this.visible = false
             this.getGamePlanList()
+            this.$message.success('修改成功')
+          } else {
+            this.$message.error(res.message)
           }
         })
       }
     },
 
-    openDeleteConfirmButton(id) {
-      this.deleteConfirmVisible = true
-      this.deleteId = id
-    },
-    closeDeleteConfirmModel() {
-      this.deleteConfirmVisible = false
-    },
-
-    deleteButtonClick() {
+    deleteGame(id) {
       request({
-        url: '/game/plan/delete/' + this.deleteId,
-        method: 'POST'
+        url: '/game/plan/delete/' + id,
+        method: 'POST',
       }).then((res) => {
         if (res.code === 200) {
           this.deleteConfirmVisible = false
           this.getGamePlanList()
+          this.$message.success('删除成功')
+        } else {
+          this.$message.error(res.message)
         }
       })
-    }
+    },
   },
 
   created() {
     this.getGamePlanList()
-  }
+  },
 }
 </script>
 

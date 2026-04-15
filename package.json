@@ -20,6 +20,7 @@
     "axios": "^0.26.1",
     "babel-loader": "8",
     "core-js": "^3.21.1",
+    "echarts": "6",
     "enquire.js": "^2.1.6",
     "isomorphic-unfetch": "^4.0.2",
     "lodash.clonedeep": "^4.5.0",

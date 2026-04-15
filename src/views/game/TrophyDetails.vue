@@ -1,69 +1,23 @@
 <template>
   <div>
     <a-spin :spinning="spinning">
-      <a-row :gutter="24">
-        <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-          <chart-card :loading="loading" title="奖杯">
-            <div slot="content">
-              <div class="trophy">
-                <img
-                  src="https://psnprofiles.com/lib/img/icons/40-platinum.png"
-                  alt="白金"
-                />
-                <p class="trophy-count">
-                  {{ this.trophyGroup.earnedplatinum }}/{{this.trophyGroup.definedplatinum }}
-                </p>
-              </div>
-              <div class="trophy">
-                <img src="https://psnprofiles.com/lib/img/icons/40-gold.png" />
-                <p class="trophy-count">
-                  {{ this.trophyGroup.earnedgold }}/{{this.trophyGroup.definedgold }}
-                </p>
-              </div>
-              <div class="trophy">
-                <img
-                  src="https://psnprofiles.com/lib/img/icons/40-silver.png"
-                />
-                <p class="trophy-count">
-                  {{ this.trophyGroup.earnedsilver }}/{{this.trophyGroup.definedsilver }}
-                </p>
-              </div>
-              <div class="trophy">
-                <img
-                  src="https://psnprofiles.com/lib/img/icons/40-bronze.png"
-                />
-                <p class="trophy-count">
-                  {{ this.trophyGroup.earnedbronze }}/{{this.trophyGroup.definedbronze }}
-                </p>
-              </div>
-            </div>
-          </chart-card>
-        </a-col>
-      </a-row>
-
-      <a-card
-        :loading="loading"
-        :title="$t('dashboard.analysis.online-top-search')"
-      >
+      <a-card :loading="loading" title="明细">
         <div class="salesCard">
-          <a-table
-            :columns="columns"
-            :dataSource="this.dataList"
-            size="middle"
-            bordered
-          >
+          <a-table :columns="columns" :dataSource="this.dataList" size="middle" bordered>
             <span slot="icon" slot-scope="text, record, index">
               <span v-if="record.earned === 1">
-                <img
-                  style="width: 50px; height: 50px; filter: grayscale(100%)"
-                  :src="record.trophyiconurl"
-                />
+                <img style="width: 50px; height: 50px; filter: grayscale(100%)" :src="record.trophyiconurl" />
               </span>
               <span v-else-if="record.earned === 0">
-                <img
-                  style="width: 50px; height: 50px"
-                  :src="record.trophyiconurl"
-                />
+                <img style="width: 50px; height: 50px" :src="record.trophyiconurl" />
+              </span>
+            </span>
+            <span slot="earned" slot-scope="text, record, index">
+              <span v-if="record.earned === 0">
+                <a-tag color="green"> 已获得</a-tag>
+              </span>
+              <span v-else-if="record.earned === 1">
+                <a-tag color="orange"> 未获得</a-tag>
               </span>
             </span>
           </a-table>
@@ -74,17 +28,16 @@
 </template>
 
 <script>
-import { ChartCard } from "@/components";
-import { baseMixin } from "@/store/app-mixin";
-import request from "@/utils/request";
+import { ChartCard } from '@/components'
+import { baseMixin } from '@/store/app-mixin'
+import request from '@/utils/request'
 
 export default {
-  name: "Analysis",
+  name: 'Analysis',
   mixins: [baseMixin],
   components: { ChartCard },
   data() {
     return {
-      id: null,
       loading: false,
       spinning: false,
       bronze: 0,
@@ -95,52 +48,74 @@ export default {
       trophyGroup: {},
       columns: [
         {
-          title: "",
-          dataIndex: "trophyiconurl",
-          key: "trophyiconurl",
-          align: "center",
-          scopedSlots: { customRender: "icon" },
+          title: '',
+          dataIndex: 'trophyiconurl',
+          key: 'trophyiconurl',
+          align: 'center',
+          scopedSlots: { customRender: 'icon' },
         },
         {
-          title: "奖杯",
-          dataIndex: "trophyname",
-          key: "trophyname",
-          align: "center",
+          title: '奖杯',
+          dataIndex: 'trophyname',
+          key: 'trophyname',
+          align: 'center',
         },
         {
-          title: "奖杯内容",
-          dataIndex: "trophydetail",
-          key: "trophydetail",
-          align: "center",
+          title: '奖杯内容',
+          dataIndex: 'trophydetail',
+          key: 'trophydetail',
+          align: 'center',
+        },
+        {
+          title: '状态',
+          dataIndex: 'earned',
+          key: 'earned',
+          align: 'center',
+          scopedSlots: { customRender: 'earned' },
+        },
+        {
+          title: '获取时间',
+          dataIndex: 'earneddatetime',
+          key: 'earneddatetime',
+          align: 'center',
         },
       ],
-    };
+      query: {
+        npCommunicationId: null,
+        groupId: null,
+      },
+    }
   },
   created() {
-    this.id = this.$route.query.id;
-    this.getTrophyListByNpCommunicationId();
-    this.getTrophyGroup();
+    this.query.npCommunicationId = this.$route.query.id
+    this.query.groupId = this.$route.query.groupId
+    this.getTrophyListByNpCommunicationId()
+    //this.getTrophyGroup()
   },
   methods: {
-    getTrophyGroup() {
-      request({
-        url: "/ps/trophy_group/" + this.id,
-        method: "GET",
-      }).then((res) => {
-        this.trophyGroup = res.data;
-      });
-    },
+    // getTrophyGroup() {
+    //   request({
+    //     url: '/ps/trophy_group/' + this.id,
+    //     method: 'GET',
+    //   }).then((res) => {
+    //     this.trophyGroup = res.data
+    //   })
+    // },
 
     getTrophyListByNpCommunicationId() {
       request({
-        url: "/ps/trophy/trophy_list/" + this.id,
-        method: "GET",
+        url: '/ps/trophy/list',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        data: this.query,
       }).then((res) => {
-        this.dataList = res.data;
-      });
+        this.dataList = res.data
+      })
     },
   },
-};
+}
 </script>
 
 <style lang="less" scoped>
