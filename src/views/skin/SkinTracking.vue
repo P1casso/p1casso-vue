@@ -150,19 +150,14 @@ export default {
       this.skinId = ''
     },
 
-    insertListening(e) {
-      e.preventDefault()
-      this.form.validateFields((errors) => {
-        if (!errors) {
-          addTrackSkin.then((res) => {
-            if (res.code === 200) {
-              this.$message.success('新增成功')
-              this.insertModelCancel()
-              this.getListeningSkinList()
-            } else {
-              this.$message.error(res.message)
-            }
-          })
+    insertListening() {
+      addTrackSkin(this.skinId).then((res) => {
+        if (res.code === 200) {
+          this.$message.success('新增成功')
+          this.insertModelCancel()
+          this.getListeningSkinList()
+        } else {
+          this.$message.error(res.message)
         }
       })
     },

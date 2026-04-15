@@ -21,3 +21,10 @@ export function addTrackSkin(id) {
     method: 'POST',
   })
 }
+
+export function getPriceHistoryById(id) {
+  return request({
+    url: '/cs_skin/price/history/' + id,
+    method: 'GET',
+  })
+}
